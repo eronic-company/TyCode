@@ -1,0 +1,86 @@
+name: Release Binaries
+
+# Builds the TyCode binary for every supported OS/arch and attaches each one to
+# the GitHub release, so `npm install -g @eronic-company/tycode` can download a
+# ready-to-run binary (no npm publishing happens here — that is done manually).
+#
+# Targets: Linux x86_64, macOS x86_64 (Intel), macOS aarch64 (Apple Silicon),
+# Windows x86_64. aarch64-linux is intentionally omitted — it is the only target
+# that would need OpenSSL cross-compiled (native-tls uses OpenSSL on Linux but
+# the OS-native TLS on macOS/Windows), which the four targets here avoid.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to attach binaries to (e.g. v0.5.1)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.asset }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            asset: tycode-linux-x86_64
+            ext: ""
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            asset: tycode-macos-x86_64
+            ext: ""
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            asset: tycode-macos-aarch64
+            ext: ""
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            asset: tycode-windows-x86_64.exe
+            ext: ".exe"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Stage binary with release name
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/release/tycode${{ matrix.ext }}" "dist/${{ matrix.asset }}"
+
+      - name: Resolve target tag
+        id: tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Attach binary to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          files: dist/${{ matrix.asset }}
