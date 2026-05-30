@@ -1,0 +1,45 @@
+{
+  "name": "@eronic-company/tycode",
+  "version": "0.5.0",
+  "description": "TyCode — AI system agent with a TUI that works with any LLM provider",
+  "license": "GPL-3.0",
+  "main": "index.js",
+  "bin": {
+    "tycode": "./bin/tycode.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eronic-company/TyCode.git"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "cli",
+    "tui",
+    "llm",
+    "anthropic",
+    "openai",
+    "ollama",
+    "gemini"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install.js",
+    "preuninstall": "node scripts/uninstall.js"
+  },
+  "files": [
+    "bin/",
+    "scripts/",
+    "index.js"
+  ],
+  "author": "AlphaGlider25",
+  "bugs": {
+    "url": "https://github.com/eronic-company/TyCode/issues"
+  },
+  "homepage": "https://github.com/eronic-company/TyCode"
+}
