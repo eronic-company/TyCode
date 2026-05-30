@@ -1,0 +1,37 @@
+[package]
+name = "tycode"
+version = "0.2.0"
+edition = "2021"
+description = "TyCode — AI system agent with a TUI that works with any LLM provider"
+license = "GPL-3.0"
+
+[[bin]]
+name = "tycode"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json", "stream", "blocking"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ratatui = "0.29"
+crossterm = "0.28"
+dirs = "5"
+glob = "0.3"
+regex = "1"
+sysinfo = "0.33"
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1"
+async-trait = "0.1"
+futures = "0.3"
+tokio-stream = "0.1"
+unicode-width = "0.2"
+textwrap = "0.16"
+bytes = "1"
+uuid = { version = "1", features = ["v4"] }
+strip-ansi-escapes = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true
