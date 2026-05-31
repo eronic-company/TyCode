@@ -1,0 +1,12 @@
+/target
+/docs
+
+# AI session files
+DISGRACE.md
+issues.txt
+# CLAUDE.md is tracked (project law enforcement)
+GEMINI.md
+AGENTS.md
+.claude/
+.codex
+*.ai-notes.md
